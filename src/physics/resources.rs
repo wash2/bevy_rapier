@@ -286,10 +286,10 @@ impl ModificationTracker {
     }
 }
 
-pub trait PhysicsHooksWithQuery<UserData: WorldQuery>: Send + Sync {
+pub trait PhysicsHooksWithQuery<'w, 's, UserData: WorldQuery>: Send + Sync {
     fn filter_contact_pair(
         &self,
-        _context: &PairFilterContext<RigidBodyComponentsSet, ColliderComponentsSet>,
+        _context: &PairFilterContext<RigidBodyComponentsSet<'w, 's>, ColliderComponentsSet<'w, 's>>,
         _user_data: &Query<UserData>,
     ) -> Option<SolverFlags> {
         None
@@ -297,7 +297,7 @@ pub trait PhysicsHooksWithQuery<UserData: WorldQuery>: Send + Sync {
 
     fn filter_intersection_pair(
         &self,
-        _context: &PairFilterContext<RigidBodyComponentsSet, ColliderComponentsSet>,
+        _context: &PairFilterContext<RigidBodyComponentsSet<'w, 's>, ColliderComponentsSet<'w, 's>>,
         _user_data: &Query<UserData>,
     ) -> bool {
         false
@@ -305,22 +305,23 @@ pub trait PhysicsHooksWithQuery<UserData: WorldQuery>: Send + Sync {
 
     fn modify_solver_contacts(
         &self,
-        _context: &mut ContactModificationContext<RigidBodyComponentsSet, ColliderComponentsSet>,
+        _context: &mut ContactModificationContext<
+            RigidBodyComponentsSet<'w, 's>,
+            ColliderComponentsSet<'w, 's>,
+        >,
         _user_data: &Query<UserData>,
     ) {
     }
 }
 
-impl<T, UserData> PhysicsHooksWithQuery<UserData> for T
+impl<'w, 's, T, UserData> PhysicsHooksWithQuery<'w, 's, UserData> for T
 where
-    T: for<'w, 's> PhysicsHooks<RigidBodyComponentsSet<'w, 's>, ColliderComponentsSet<'w, 's>>
-        + Send
-        + Sync,
+    T: PhysicsHooks<RigidBodyComponentsSet<'w, 's>, ColliderComponentsSet<'w, 's>> + Send + Sync,
     UserData: WorldQuery,
 {
     fn filter_intersection_pair(
         &self,
-        context: &PairFilterContext<RigidBodyComponentsSet, ColliderComponentsSet>,
+        context: &PairFilterContext<RigidBodyComponentsSet<'w, 's>, ColliderComponentsSet<'w, 's>>,
         _: &Query<UserData>,
     ) -> bool {
         PhysicsHooks::filter_intersection_pair(self, context)
@@ -328,7 +329,10 @@ where
 
     fn modify_solver_contacts(
         &self,
-        context: &mut ContactModificationContext<RigidBodyComponentsSet, ColliderComponentsSet>,
+        context: &mut ContactModificationContext<
+            RigidBodyComponentsSet<'w, 's>,
+            ColliderComponentsSet<'w, 's>,
+        >,
         _: &Query<UserData>,
     ) {
         PhysicsHooks::modify_solver_contacts(self, context)
@@ -336,12 +340,12 @@ where
 }
 
 pub struct PhysicsHooksWithQueryObject<UserData: WorldQuery>(
-    pub Box<dyn PhysicsHooksWithQuery<UserData>>,
+    pub Box<dyn for<'w, 's> PhysicsHooksWithQuery<'w, 's, UserData>>,
 );
 
 pub(crate) struct PhysicsHooksWithQueryInstance<'w, 's, UserData: WorldQuery> {
     pub user_data: Query<'w, 's, UserData>,
-    pub hooks: &'w dyn PhysicsHooksWithQuery<UserData>,
+    pub hooks: &'w dyn for<'wo, 'st> PhysicsHooksWithQuery<'wo, 'st, UserData>,
 }
 
 impl<'w, 's, UserData: WorldQuery>
@@ -365,7 +369,10 @@ impl<'w, 's, UserData: WorldQuery>
 
     fn modify_solver_contacts(
         &self,
-        context: &mut ContactModificationContext<RigidBodyComponentsSet, ColliderComponentsSet>,
+        context: &mut ContactModificationContext<
+            RigidBodyComponentsSet<'w, 's>,
+            ColliderComponentsSet<'w, 's>,
+        >,
     ) {
         self.hooks.modify_solver_contacts(context, &self.user_data)
     }
