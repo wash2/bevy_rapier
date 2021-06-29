@@ -59,14 +59,14 @@ impl Default for RapierConfiguration {
 // investigated how to reproduce this exactly to open an
 // issue).
 /// A set of queues collecting events emitted by the physics engine.
-pub(crate) struct EventQueue<'a> {
+pub(crate) struct EventQueue<'w, 's> {
     /// The unbounded contact event queue.
-    pub contact_events: RwLock<EventWriter<'a, ContactEvent>>,
+    pub contact_events: RwLock<EventWriter<'w, 's, ContactEvent>>,
     /// The unbounded intersection event queue.
-    pub intersection_events: RwLock<EventWriter<'a, IntersectionEvent>>,
+    pub intersection_events: RwLock<EventWriter<'w, 's, IntersectionEvent>>,
 }
 
-impl<'a> EventHandler for EventQueue<'a> {
+impl<'w, 's> EventHandler for EventQueue<'w, 's> {
     fn handle_intersection_event(&self, event: IntersectionEvent) {
         if let Ok(mut events) = self.intersection_events.write() {
             events.send(event)
@@ -313,10 +313,8 @@ pub trait PhysicsHooksWithQuery<UserData: WorldQuery>: Send + Sync {
 
 impl<T, UserData> PhysicsHooksWithQuery<UserData> for T
 where
-    T: for<'a, 'b, 'c, 'd, 'e, 'f> PhysicsHooks<
-            RigidBodyComponentsSet<'a, 'b, 'c>,
-            ColliderComponentsSet<'d, 'e, 'f>,
-        > + Send
+    T: for<'w, 's> PhysicsHooks<RigidBodyComponentsSet<'w, 's>, ColliderComponentsSet<'w, 's>>
+        + Send
         + Sync,
     UserData: WorldQuery,
 {
@@ -341,14 +339,14 @@ pub struct PhysicsHooksWithQueryObject<UserData: WorldQuery>(
     pub Box<dyn PhysicsHooksWithQuery<UserData>>,
 );
 
-pub(crate) struct PhysicsHooksWithQueryInstance<'a, 'b, UserData: WorldQuery> {
-    pub user_data: Query<'a, UserData>,
-    pub hooks: &'b dyn PhysicsHooksWithQuery<UserData>,
+pub(crate) struct PhysicsHooksWithQueryInstance<'w, 's, UserData: WorldQuery> {
+    pub user_data: Query<'w, 's, UserData>,
+    pub hooks: &'w dyn PhysicsHooksWithQuery<UserData>,
 }
 
-impl<'aa, 'bb, 'a, 'b, 'c, 'd, 'e, 'f, UserData: WorldQuery>
-    PhysicsHooks<RigidBodyComponentsSet<'a, 'b, 'c>, ColliderComponentsSet<'d, 'e, 'f>>
-    for PhysicsHooksWithQueryInstance<'aa, 'bb, UserData>
+impl<'w, 's, UserData: WorldQuery>
+    PhysicsHooks<RigidBodyComponentsSet<'w, 's>, ColliderComponentsSet<'w, 's>>
+    for PhysicsHooksWithQueryInstance<'w, 's, UserData>
 {
     fn filter_contact_pair(
         &self,

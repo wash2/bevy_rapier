@@ -17,18 +17,19 @@ impl IntoEntity for ColliderHandle {
     }
 }
 
-pub type QueryPipelineColliderComponentsQuery<'a, 'b> = Query<
-    'a,
+pub type QueryPipelineColliderComponentsQuery<'w, 's> = Query<
+    'w,
+    's,
     (
         Entity,
-        &'b ColliderPosition,
-        &'b ColliderShape,
-        &'b ColliderFlags,
+        &'static ColliderPosition,
+        &'static ColliderShape,
+        &'static ColliderFlags,
     ),
 >;
 
-pub struct QueryPipelineColliderComponentsSet<'a, 'b, 'c>(
-    pub &'c QueryPipelineColliderComponentsQuery<'a, 'b>,
+pub struct QueryPipelineColliderComponentsSet<'w, 's>(
+    pub &'w QueryPipelineColliderComponentsQuery<'w, 's>,
 );
 
 impl_component_set_wo_query_set!(
@@ -43,37 +44,40 @@ impl_component_set_wo_query_set!(QueryPipelineColliderComponentsSet, ColliderFla
     data.3
 });
 
-pub struct ColliderComponentsSet<'a, 'b, 'c>(pub ColliderComponentsQuery<'a, 'b, 'c>);
+pub struct ColliderComponentsSet<'w, 's>(pub ColliderComponentsQuery<'w, 's>);
 
-pub type ColliderComponentsQuery<'a, 'b, 'c> = QuerySet<(
+pub type ColliderComponentsQuery<'w, 's> = QuerySet<(
     Query<
-        'a,
+        'w,
+        's,
         (
             Entity,
-            &'b ColliderChanges,
-            &'b ColliderPosition,
-            &'b ColliderBroadPhaseData,
-            &'b ColliderShape,
-            &'b ColliderType,
-            &'b ColliderMaterial,
-            &'b ColliderFlags,
-            Option<&'b ColliderParent>,
+            &'static ColliderChanges,
+            &'static ColliderPosition,
+            &'static ColliderBroadPhaseData,
+            &'static ColliderShape,
+            &'static ColliderType,
+            &'static ColliderMaterial,
+            &'static ColliderFlags,
+            Option<&'static ColliderParent>,
         ),
     >,
     Query<
-        'a,
+        'w,
+        's,
         (
             Entity,
-            &'c mut ColliderChanges,
-            &'c mut ColliderPosition,
-            &'c mut ColliderBroadPhaseData,
+            &'static mut ColliderChanges,
+            &'static mut ColliderPosition,
+            &'static mut ColliderBroadPhaseData,
         ),
     >,
     Query<
-        'a,
+        'w,
+        's,
         (
             Entity,
-            &'c mut ColliderChanges,
+            &'static mut ColliderChanges,
             Or<(Changed<ColliderPosition>, Added<ColliderPosition>)>,
             Or<(Changed<ColliderFlags>, Added<ColliderFlags>)>,
             Or<(Changed<ColliderShape>, Added<ColliderShape>)>,

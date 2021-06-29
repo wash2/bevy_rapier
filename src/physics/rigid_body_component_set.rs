@@ -21,47 +21,50 @@ impl IntoEntity for RigidBodyHandle {
     }
 }
 
-pub type RigidBodyComponentsQuery<'a, 'b, 'c> = QuerySet<(
+pub type RigidBodyComponentsQuery<'w, 's> = QuerySet<(
     Query<
-        'a,
+        'w,
+        's,
         (
             Entity,
-            &'b RigidBodyPosition,
-            &'b RigidBodyVelocity,
-            &'b RigidBodyMassProps,
-            &'b RigidBodyIds,
-            &'b RigidBodyForces,
-            &'b RigidBodyActivation,
-            &'b RigidBodyChanges,
-            &'b RigidBodyCcd,
-            &'b RigidBodyColliders,
-            &'b RigidBodyDamping,
-            &'b RigidBodyDominance,
-            &'b RigidBodyType,
+            &'static RigidBodyPosition,
+            &'static RigidBodyVelocity,
+            &'static RigidBodyMassProps,
+            &'static RigidBodyIds,
+            &'static RigidBodyForces,
+            &'static RigidBodyActivation,
+            &'static RigidBodyChanges,
+            &'static RigidBodyCcd,
+            &'static RigidBodyColliders,
+            &'static RigidBodyDamping,
+            &'static RigidBodyDominance,
+            &'static RigidBodyType,
         ),
     >,
     Query<
-        'a,
+        'w,
+        's,
         (
             Entity,
-            &'c mut RigidBodyPosition,
-            &'c mut RigidBodyVelocity,
-            &'c mut RigidBodyMassProps,
-            &'c mut RigidBodyIds,
-            &'c mut RigidBodyForces,
-            &'c mut RigidBodyActivation,
-            &'c mut RigidBodyChanges,
-            &'c mut RigidBodyCcd,
+            &'static mut RigidBodyPosition,
+            &'static mut RigidBodyVelocity,
+            &'static mut RigidBodyMassProps,
+            &'static mut RigidBodyIds,
+            &'static mut RigidBodyForces,
+            &'static mut RigidBodyActivation,
+            &'static mut RigidBodyChanges,
+            &'static mut RigidBodyCcd,
             // Need for handling collider removals.
-            &'c mut RigidBodyColliders,
+            &'static mut RigidBodyColliders,
         ),
     >,
     Query<
-        'a,
+        'w,
+        's,
         (
             Entity,
-            &'c mut RigidBodyChanges,
-            &'c mut RigidBodyActivation,
+            &'static mut RigidBodyChanges,
+            &'static mut RigidBodyActivation,
             Or<(Changed<RigidBodyPosition>, Added<RigidBodyPosition>)>,
             Or<(Changed<RigidBodyVelocity>, Added<RigidBodyVelocity>)>,
             Or<(Changed<RigidBodyForces>, Added<RigidBodyForces>)>,
@@ -84,13 +87,14 @@ pub type RigidBodyComponentsQuery<'a, 'b, 'c> = QuerySet<(
         )>,
     >,
     Query<
-        'a,
-        &'c mut RigidBodyChanges,
+        'w,
+        's,
+        &'static mut RigidBodyChanges,
         Or<(Changed<RigidBodyActivation>, Added<RigidBodyActivation>)>,
     >,
 )>;
 
-pub struct RigidBodyComponentsSet<'a, 'b, 'c>(pub RigidBodyComponentsQuery<'a, 'b, 'c>);
+pub struct RigidBodyComponentsSet<'w, 's>(pub RigidBodyComponentsQuery<'w, 's>);
 
 impl_component_set_mut!(RigidBodyComponentsSet, RigidBodyPosition, |data| data.1);
 impl_component_set_mut!(RigidBodyComponentsSet, RigidBodyVelocity, |data| data.2);

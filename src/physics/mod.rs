@@ -53,14 +53,14 @@ pub trait BundleBuilder {
 
 macro_rules! impl_component_set_mut(
     ($ComponentsSet: ident, $T: ty, |$data: ident| $data_expr: expr) => {
-        impl<'a, 'b, 'c> ComponentSetOption<$T> for $ComponentsSet<'a, 'b, 'c> {
+        impl<'w, 's> ComponentSetOption<$T> for $ComponentsSet<'w, 's> {
             #[inline(always)]
             fn get(&self, handle: Index) -> Option<&$T> {
                 self.0.q0().get_component(handle.entity()).ok()
             }
         }
 
-        impl<'a, 'b, 'c> ComponentSet<$T> for $ComponentsSet<'a, 'b, 'c> {
+        impl<'w, 's> ComponentSet<$T> for $ComponentsSet<'w, 's> {
             #[inline(always)]
             fn size_hint(&self) -> usize {
                 0
@@ -72,7 +72,7 @@ macro_rules! impl_component_set_mut(
             }
         }
 
-        impl<'a, 'b, 'c> ComponentSetMut<$T> for $ComponentsSet<'a, 'b, 'c> {
+        impl<'w, 's> ComponentSetMut<$T> for $ComponentsSet<'w, 's> {
             #[inline(always)]
             fn set_internal(&mut self, handle: Index, val: $T) {
                 let _ = self.0.q1_mut().get_component_mut(handle.entity()).map(|mut data| *data = val);
@@ -95,14 +95,14 @@ macro_rules! impl_component_set_mut(
 
 macro_rules! impl_component_set_wo_query_set(
     ($ComponentsSet: ident, $T: ty, |$data: ident| $data_expr: expr) => {
-        impl<'a, 'b, 'c> ComponentSetOption<$T> for $ComponentsSet<'a, 'b, 'c> {
+        impl<'w, 's> ComponentSetOption<$T> for $ComponentsSet<'w, 's> {
             #[inline(always)]
             fn get(&self, handle: Index) -> Option<&$T> {
                 self.0.get_component(handle.entity()).ok()
             }
         }
 
-        impl<'a, 'b, 'c> ComponentSet<$T> for $ComponentsSet<'a, 'b, 'c> {
+        impl<'w, 's> ComponentSet<$T> for $ComponentsSet<'w, 's> {
             #[inline(always)]
             fn size_hint(&self) -> usize {
                 0
@@ -118,14 +118,14 @@ macro_rules! impl_component_set_wo_query_set(
 
 macro_rules! impl_component_set(
     ($ComponentsSet: ident, $T: ty, |$data: ident| $data_expr: expr) => {
-        impl<'a, 'b, 'c> ComponentSetOption<$T> for $ComponentsSet<'a, 'b, 'c> {
+        impl<'w, 's> ComponentSetOption<$T> for $ComponentsSet<'w, 's> {
             #[inline(always)]
             fn get(&self, handle: Index) -> Option<&$T> {
                 self.0.q0().get_component(handle.entity()).ok()
             }
         }
 
-        impl<'a, 'b, 'c> ComponentSet<$T> for $ComponentsSet<'a, 'b, 'c> {
+        impl<'w, 's> ComponentSet<$T> for $ComponentsSet<'w, 's> {
             #[inline(always)]
             fn size_hint(&self) -> usize {
                 0
@@ -141,7 +141,7 @@ macro_rules! impl_component_set(
 
 macro_rules! impl_component_set_option(
     ($ComponentsSet: ident, $T: ty) => {
-        impl<'a, 'b, 'c> ComponentSetOption<$T> for $ComponentsSet<'a, 'b, 'c> {
+        impl<'w, 's> ComponentSetOption<$T> for $ComponentsSet<'w, 's> {
             #[inline(always)]
             fn get(&self, handle: Index) -> Option<&$T> {
                 self.0.q0().get_component(handle.entity()).ok()
@@ -150,23 +150,21 @@ macro_rules! impl_component_set_option(
     }
 );
 
-pub type ComponentSetQueryMut<'a, 'b, 'c, T> =
-    QuerySet<(Query<'a, (Entity, &'b T)>, Query<'a, (Entity, &'c mut T)>)>;
+pub type ComponentSetQueryMut<'w, 's, T> = QuerySet<(
+    Query<'w, 's, (Entity, &'static T)>,
+    Query<'w, 's, (Entity, &'static mut T)>,
+)>;
 
-pub struct QueryComponentSetMut<'a, 'b, 'c, T: 'static + Send + Sync>(
-    ComponentSetQueryMut<'a, 'b, 'c, T>,
-);
+pub struct QueryComponentSetMut<'w, 's, T: 'static + Send + Sync>(ComponentSetQueryMut<'w, 's, T>);
 
-impl<'a, 'b, 'c, T: 'static + Send + Sync> ComponentSetOption<T>
-    for QueryComponentSetMut<'a, 'b, 'c, T>
-{
+impl<'w, 's, T: 'static + Send + Sync> ComponentSetOption<T> for QueryComponentSetMut<'w, 's, T> {
     #[inline(always)]
     fn get(&self, handle: Index) -> Option<&T> {
         self.0.q0().get_component(handle.entity()).ok()
     }
 }
 
-impl<'a, 'b, 'c, T: 'static + Send + Sync> ComponentSet<T> for QueryComponentSetMut<'a, 'b, 'c, T> {
+impl<'w, 's, T: 'static + Send + Sync> ComponentSet<T> for QueryComponentSetMut<'w, 's, T> {
     #[inline(always)]
     fn size_hint(&self) -> usize {
         0
@@ -178,9 +176,7 @@ impl<'a, 'b, 'c, T: 'static + Send + Sync> ComponentSet<T> for QueryComponentSet
     }
 }
 
-impl<'a, 'b, 'c, T: 'static + Send + Sync> ComponentSetMut<T>
-    for QueryComponentSetMut<'a, 'b, 'c, T>
-{
+impl<'w, 's, T: 'static + Send + Sync> ComponentSetMut<T> for QueryComponentSetMut<'w, 's, T> {
     #[inline(always)]
     fn set_internal(&mut self, handle: Index, val: T) {
         let _ = self
