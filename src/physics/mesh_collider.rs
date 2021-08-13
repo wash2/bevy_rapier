@@ -5,8 +5,8 @@ use std::{
 };
 
 use crate::{na::Point, prelude::Real};
-use bevy::prelude::Mesh;
-use bevy::render::pipeline::VertexFormat::Float3;
+use bevy::render2::mesh::Mesh;
+// use bevy::render::pipeline::VertexFormat::Float32x3;
 use rapier::math::DIM;
 
 #[derive(Debug, Clone, Default)]
@@ -93,12 +93,12 @@ impl TryFrom<SharedShapeMesh> for (Vec<Point<Real, DIM>>, Vec<[u32; DIM]>) {
     fn try_from(
         mesh: SharedShapeMesh,
     ) -> Result<(Vec<Point<Real, DIM>>, Vec<[u32; DIM]>), ErrorSum> {
-        let vert_buffer_layout = mesh.0.get_vertex_buffer_layout();
-        let vert_pos_attr = vert_buffer_layout
-            .attributes
-            .iter()
-            .find(|&x| x.name == "Vertex_Position")
-            .ok_or(ErrorSum::VertexBufferLayoutMissing(Default::default()))?;
+        // let vert_buffer_layout = mesh.0.get_vertex_buffer_layout();
+        // let vert_pos_attr = vert_buffer_layout
+        //     .attributes
+        //     .iter()
+        //     .find(|&x| x.name == "Vertex_Position")
+        //     .ok_or(ErrorSum::VertexBufferLayoutMissing(Default::default()))?;
 
         let vert_pos_start = 5;
         // let vert_pos_start: usize = (vert_pos_attr.offset)
@@ -123,7 +123,7 @@ impl TryFrom<SharedShapeMesh> for (Vec<Point<Real, DIM>>, Vec<[u32; DIM]>) {
         //     }
         //     _ => Err(ErrorSum::VertexFormatError(Default::default())),
         // }?;
-
+        let vert_pos_end: usize = vert_pos_start + 4 * 3;
         let vertex_chunk_bytes = 8*4;
 
         let coll_verts: Vec<Point<f32, DIM>> = mesh

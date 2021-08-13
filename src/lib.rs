@@ -30,6 +30,11 @@ pub mod prelude {
         RapierConfiguration, RapierPhysicsPlugin, RigidBodyBundle, RigidBodyComponentsSet,
         RigidBodyPositionSync,
     };
+    #[cfg(feature = "dim3")]
+    pub use super::physics::{
+        ErrorSum, OffsetTooBig, SharedShapeMesh, VertexBufferLayoutMissing, VertexFormatError,
+    };
+    
     #[cfg(feature = "render")]
     pub use super::render::{ColliderDebugRender, RapierRenderPlugin};
     pub use rapier::prelude::*;

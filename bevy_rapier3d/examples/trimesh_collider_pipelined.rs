@@ -1,16 +1,15 @@
 extern crate rapier3d as rapier; // For the debug UI.
 
-use bevy::{
-    gltf::{Gltf, GltfMesh},
-    prelude::*,
-};
+use bevy::{PipelinedDefaultPlugins, asset::{HandleUntyped, Handle}, ecs::prelude::*, gltf2::{Gltf, GltfMesh}, math::Vec3, pbr2::{PbrBundle, PointLight, PointLightBundle, StandardMaterial}, prelude::{App, AssetServer, Assets, ClearColor, CoreStage, Time, Transform}, render2::{
+        camera::{Camera, PerspectiveCameraBundle},
+        color::Color,
+        mesh::{shape, Mesh},
+    }};
 use bevy_rapier3d::{na::Point3, prelude::*};
 use rapier3d::pipeline::PhysicsPipeline;
 use std::convert::TryInto;
-use ui::DebugUiPlugin;
+static DEBUG: &str = "debug";
 
-#[path = "../../src_debug_ui/mod.rs"]
-mod ui;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 enum AppState {
@@ -67,7 +66,7 @@ fn setup_physics(
     asset_server: Res<AssetServer>,
     gltfs: Res<Assets<Gltf>>,
     gltf_meshes: Res<Assets<GltfMesh>>,
-    meshes: Res<Assets<Mesh>>,
+    mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     let color = 0;
@@ -80,7 +79,18 @@ fn setup_physics(
 
     commands
         .spawn_bundle(collider)
-        .insert(ColliderDebugRender::with_id(color))
+        // .insert(ColliderDebugRender::with_id(color))
+        .insert_bundle(PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Box::new(10., 0.2, 10.))),
+        material: materials.add(StandardMaterial {
+            base_color: Color::hex("ffd891").unwrap(),
+            // vary key PBR parameters on a grid of spheres to show the effect
+            unlit: true,
+            ..Default::default()
+        }),
+        transform: Transform::from_xyz(-5.0, -2.5, 0.0),
+        ..Default::default()
+    })
         .insert(ColliderPositionSync::Discrete);
 
     /* Create the bouncing ball. */
@@ -101,7 +111,21 @@ fn setup_physics(
         .spawn_bundle(rigid_body)
         .insert_bundle(collider)
         // .insert(mesh)
-        .insert(ColliderDebugRender::with_id(color))
+        // .insert(ColliderDebugRender::with_id(color))
+        .insert_bundle(PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Icosphere {
+            radius: 0.5,
+            subdivisions: 4,
+        })),
+        material: materials.add(StandardMaterial {
+            base_color: Color::hex("ffd891").unwrap(),
+            // vary key PBR parameters on a grid of spheres to show the effect
+            unlit: true,
+            ..Default::default()
+        }),
+        transform: Transform::from_xyz(-5.0, -2.5, 0.0),
+        ..Default::default()
+    })
         .insert(ColliderPositionSync::Discrete);
 
     // Then any asset in the folder can be accessed like this:
@@ -134,27 +158,33 @@ fn setup_physics(
         .spawn_bundle(coll)
         .insert_bundle(rb)
         .insert_bundle(PbrBundle {
-            mesh: suzanne_handle.clone(),
-            material: materials.add(Color::rgb(0.5, 0.4, 0.3).into()),
+        mesh: suzanne_handle.clone(),
+        material: materials.add(StandardMaterial {
+            base_color: Color::hex("ffd891").unwrap(),
+            // vary key PBR parameters on a grid of spheres to show the effect
+            unlit: true,
             ..Default::default()
-        })
+        }),
+        transform: Transform::from_xyz(-5.0, -2.5, 0.0),
+        ..Default::default()
+    })
         .insert(ColliderPositionSync::Discrete);
 }
 
 fn main() {
     App::new()
-        .insert_resource(ClearColor(Color::rgb(
-            0xF9 as f32 / 255.0,
-            0xF9 as f32 / 255.0,
-            0xFF as f32 / 255.0,
-        )))
-        .insert_resource(Msaa::default())
-        .add_plugins(DefaultPlugins)
+        // .insert_resource(ClearColor(Color::rgb(
+        //     0xF9 as f32 / 255.0,
+        //     0xF9 as f32 / 255.0,
+        //     0xFF as f32 / 255.0,
+        // )))
+        // .insert_resource(Msaa::default())
+        .add_plugins(PipelinedDefaultPlugins)
         .add_plugin(bevy_winit::WinitPlugin::default())
         // .add_plugin(bevy_wgpu::WgpuPlugin::default())
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(RapierRenderPlugin)
-        .add_plugin(DebugUiPlugin)
+        // .add_plugin(DebugUiPlugin)
         .add_startup_system(setup_graphics.system())
         .add_startup_system(enable_physics_profiling.system())
         .add_state(AppState::GltfAssetsLoading)

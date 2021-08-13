@@ -30,13 +30,13 @@ enhanced-determinism = [ "rapier3d/enhanced-determinism" ]
 
 [dependencies]
 # bevy = { version = "0.5", default-features = false }
-bevy = { path="C:\\Users\\swulb\\gamedev\\bevy", default-features = false }
+bevy = { path="C:\\Users\\swulb\\gamedev\\bevy", default-features = false, features=["bevy_render2"] }
 nalgebra = { version = "0.27", features = [ "convert-glam015" ] }
 # Don't enable the default features because we don't need the ColliderSet/RigidBodySet
 rapier3d = { version = "^0.9.2", default-features = false, features = [ "dim3", "f32" ] }
 
 [dev-dependencies]
-bevy = { path="C:\\Users\\swulb\\gamedev\\bevy",features=["bevy_gltf"] }
+bevy = { path="C:\\Users\\swulb\\gamedev\\bevy", features=["bevy_gltf2", "bevy_render2", "bevy_pbr2", "bevy_core_pipeline"] }
 
-bevy_wgpu = { git = "https://github.com/cart/bevy", branch = "pipelined-rendering" }
-bevy_winit = { git = "https://github.com/cart/bevy", branch = "pipelined-rendering", features = [ "x11" ] }
+bevy_wgpu = { path="C:\\Users\\swulb\\gamedev\\bevy\\crates\\bevy_wgpu" }
+bevy_winit = { path="C:\\Users\\swulb\\gamedev\\bevy\\crates\\bevy_winit", features = [ "x11" ] }
