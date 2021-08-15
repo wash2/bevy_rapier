@@ -1,7 +1,7 @@
 extern crate rapier3d as rapier; // For the debug UI.
 
 use bevy::{PipelinedDefaultPlugins, asset::{HandleUntyped, Handle}, ecs::prelude::*, gltf2::{Gltf, GltfMesh}, math::Vec3, pbr2::{PbrBundle, PointLight, PointLightBundle, StandardMaterial}, prelude::{App, AssetServer, Assets, ClearColor, CoreStage, Time, Transform}, render2::{
-        camera::{Camera, PerspectiveCameraBundle},
+        camera::{PerspectiveCameraBundle},
         color::Color,
         mesh::{shape, Mesh},
     }};
@@ -179,30 +179,24 @@ fn setup_physics(
 
 fn main() {
     App::new()
-        // .insert_resource(ClearColor(Color::rgb(
-        //     0xF9 as f32 / 255.0,
-        //     0xF9 as f32 / 255.0,
-        //     0xFF as f32 / 255.0,
-        // )))
-        // .insert_resource(Msaa::default())
         .add_plugins(PipelinedDefaultPlugins)
         .add_plugin(bevy_winit::WinitPlugin::default())
         // .add_plugin(bevy_wgpu::WgpuPlugin::default())
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(RapierRenderPlugin)
         // .add_plugin(DebugUiPlugin)
-        .add_startup_system(setup_graphics.system())
-        .add_startup_system(enable_physics_profiling.system())
+        .add_startup_system(setup_graphics)
+        .add_startup_system(enable_physics_profiling)
         .add_state(AppState::GltfAssetsLoading)
         .init_resource::<AssetsLoading>()
         .add_system_set(
-            SystemSet::on_enter(AppState::GltfAssetsLoading).with_system(setup_assets.system()),
+            SystemSet::on_enter(AppState::GltfAssetsLoading).with_system(setup_assets),
         )
         .add_system_set(
             SystemSet::on_update(AppState::GltfAssetsLoading)
-                .with_system(check_assets_ready.system()),
+                .with_system(check_assets_ready),
         )
-        .add_system_set(SystemSet::on_enter(AppState::InGame).with_system(setup_physics.system()))
+        .add_system_set(SystemSet::on_enter(AppState::InGame).with_system(setup_physics))
         .run();
 }
 

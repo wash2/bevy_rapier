@@ -1,17 +1,17 @@
 extern crate nalgebra as na;
 extern crate rapier3d as rapier; // For the debug UI.
 
-use bevy::prelude::*;
+use bevy::{PipelinedDefaultPlugins, core::Time, ecs::prelude::*, math::{Mat4, Vec3}, pbr2::{PointLight, PointLightBundle}, prelude::{App, Transform, FaceToward}, render2::camera::PerspectiveCameraBundle};
 use bevy_rapier3d::prelude::*;
 
 use bevy::render::pass::ClearColor;
 use na::{Isometry3, Point3, Unit, Vector3};
 use rapier::dynamics::{BallJoint, FixedJoint, PrismaticJoint, RevoluteJoint, RigidBodyType};
 use rapier3d::pipeline::PhysicsPipeline;
-use ui::DebugUiPlugin;
+// use ui::DebugUiPlugin;
 
-#[path = "../../src_debug_ui/mod.rs"]
-mod ui;
+// #[path = "../../src_debug_ui/mod.rs"]
+// mod ui;
 
 #[derive(Default)]
 pub struct DespawnResource {
@@ -19,24 +19,24 @@ pub struct DespawnResource {
 }
 
 fn main() {
-    App::build()
-        .insert_resource(ClearColor(Color::rgb(
-            0xF9 as f32 / 255.0,
-            0xF9 as f32 / 255.0,
-            0xFF as f32 / 255.0,
-        )))
-        .insert_resource(Msaa::default())
+    App::new()
+        // .insert_resource(ClearColor(Color::rgb(
+        //     0xF9 as f32 / 255.0,
+        //     0xF9 as f32 / 255.0,
+        //     0xFF as f32 / 255.0,
+        // )))
+        // .insert_resource(Msaa::default())
         .insert_resource(DespawnResource::default())
-        .add_plugins(DefaultPlugins)
+        .add_plugins(PipelinedDefaultPlugins)
         .add_plugin(bevy_winit::WinitPlugin::default())
-        .add_plugin(bevy_wgpu::WgpuPlugin::default())
+        // .add_plugin(bevy_wgpu::WgpuPlugin::default())
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(RapierRenderPlugin)
-        .add_plugin(DebugUiPlugin)
-        .add_startup_system(setup_graphics.system())
-        .add_startup_system(setup_physics.system())
-        .add_startup_system(enable_physics_profiling.system())
-        .add_system(despawn.system())
+        // .add_plugin(DebugUiPlugin)
+        .add_startup_system(setup_graphics)
+        .add_startup_system(setup_physics)
+        .add_startup_system(enable_physics_profiling)
+        .add_system(despawn)
         .run();
 }
 
@@ -45,9 +45,9 @@ fn enable_physics_profiling(mut pipeline: ResMut<PhysicsPipeline>) {
 }
 
 fn setup_graphics(mut commands: Commands) {
-    commands.spawn_bundle(LightBundle {
+    commands.spawn_bundle(PointLightBundle {
         transform: Transform::from_translation(Vec3::new(100.0, 10.0, 200.0)),
-        light: Light {
+        point_light: PointLight {
             intensity: 100_000.0,
             range: 3000.0,
             ..Default::default()

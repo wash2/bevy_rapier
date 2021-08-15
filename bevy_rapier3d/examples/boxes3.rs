@@ -1,33 +1,33 @@
 extern crate rapier3d as rapier; // For the debug UI.
 
-use bevy::prelude::*;
+use bevy::{
+    PipelinedDefaultPlugins, 
+    ecs::prelude::*, 
+    pbr2::{PointLight, PointLightBundle}, 
+    prelude::{App, Transform, FaceToward}, 
+    render2::camera::PerspectiveCameraBundle,
+    math::{Mat4, Vec3},
+};
 use bevy_rapier3d::prelude::*;
 
-use bevy::render::pass::ClearColor;
 use rapier::geometry::ColliderShape;
 use rapier3d::pipeline::PhysicsPipeline;
-use ui::DebugUiPlugin;
+// use ui::DebugUiPlugin;
 
-#[path = "../../src_debug_ui/mod.rs"]
-mod ui;
+// #[path = "../../src_debug_ui/mod.rs"]
+// mod ui;
 
 fn main() {
     App::new()
-        .insert_resource(ClearColor(Color::rgb(
-            0xF9 as f32 / 255.0,
-            0xF9 as f32 / 255.0,
-            0xFF as f32 / 255.0,
-        )))
-        .insert_resource(Msaa::default())
-        .add_plugins(DefaultPlugins)
+        .add_plugins(PipelinedDefaultPlugins)
         .add_plugin(bevy_winit::WinitPlugin::default())
-        .add_plugin(bevy_wgpu::WgpuPlugin::default())
+        // .add_plugin(bevy_wgpu::WgpuPlugin::default())
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(RapierRenderPlugin)
-        .add_plugin(DebugUiPlugin)
-        .add_startup_system(setup_graphics.system())
-        .add_startup_system(setup_physics.system())
-        .add_startup_system(enable_physics_profiling.system())
+        // .add_plugin(DebugUiPlugin)
+        .add_startup_system(setup_graphics)
+        .add_startup_system(setup_physics)
+        .add_startup_system(enable_physics_profiling)
         .run();
 }
 

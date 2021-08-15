@@ -1,31 +1,38 @@
 extern crate rapier3d as rapier; // For the debug UI.
 
-use bevy::prelude::*;
+use bevy::{
+    PipelinedDefaultPlugins, 
+    ecs::prelude::*, 
+    pbr2::{PointLight, PointLightBundle}, 
+    prelude::{App, Transform, FaceToward}, 
+    render2::camera::PerspectiveCameraBundle,
+    math::{Mat4, Vec3, Quat},
+};
 use bevy_rapier3d::prelude::*;
 
-use bevy::render::pass::ClearColor;
+// use bevy::render::pass::ClearColor;
 use rapier::dynamics::RigidBodyMassPropsFlags;
 use rapier::geometry::ColliderShape;
 use rapier3d::pipeline::PhysicsPipeline;
-use ui::DebugUiPlugin;
+// use ui::DebugUiPlugin;
 
-#[path = "../../src_debug_ui/mod.rs"]
-mod ui;
+// #[path = "../../src_debug_ui/mod.rs"]
+// mod ui;
 
 fn main() {
-    App::build()
-        .insert_resource(ClearColor(Color::rgb(
-            0xF9 as f32 / 255.0,
-            0xF9 as f32 / 255.0,
-            0xFF as f32 / 255.0,
-        )))
-        .insert_resource(Msaa::default())
-        .add_plugins(DefaultPlugins)
+    App::new()
+        // .insert_resource(ClearColor(Color::rgb(
+        //     0xF9 as f32 / 255.0,
+        //     0xF9 as f32 / 255.0,
+        //     0xFF as f32 / 255.0,
+        // )))
+        // .insert_resource(Msaa::default())
+        .add_plugins(PipelinedDefaultPlugins)
         .add_plugin(bevy_winit::WinitPlugin::default())
-        .add_plugin(bevy_wgpu::WgpuPlugin::default())
+        // .add_plugin(bevy_wgpu::WgpuPlugin::default())
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(RapierRenderPlugin)
-        .add_plugin(DebugUiPlugin)
+        // .add_plugin(DebugUiPlugin)
         .add_startup_system(setup_graphics.system())
         .add_startup_system(setup_physics.system())
         .add_startup_system(enable_physics_profiling.system())
@@ -37,9 +44,9 @@ fn enable_physics_profiling(mut pipeline: ResMut<PhysicsPipeline>) {
 }
 
 fn setup_graphics(mut commands: Commands) {
-    commands.spawn_bundle(LightBundle {
+    commands.spawn_bundle(PointLightBundle {
         transform: Transform::from_translation(Vec3::new(100.0, 10.0, 200.0)),
-        light: Light {
+        point_light: PointLight {
             intensity: 100_000.0,
             range: 3000.0,
             ..Default::default()

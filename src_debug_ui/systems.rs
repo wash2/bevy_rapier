@@ -1,4 +1,10 @@
-use bevy::prelude::*;
+use bevy::{
+    asset::AssetServer,
+    ecs::system::{Commands, Res, Query},
+    ui::{Style, entity::{TextBundle, UiCameraBundle}},
+    text::{Text, TextSection, TextStyle},
+    render2::color::Color,
+};
 use rapier::pipeline::PhysicsPipeline;
 
 pub fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
