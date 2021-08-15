@@ -1,8 +1,11 @@
 use crate::physics::RapierConfiguration;
 use crate::rapier::geometry::ColliderShape;
 use crate::render::ColliderDebugRender;
-use bevy::prelude::*;
-use bevy::render::mesh::{Indices, VertexAttributeValues};
+use bevy::ecs::prelude::*;
+use bevy::math::Vec3;
+use bevy::pbr2::{PbrBundle, PointLight, PointLightBundle, StandardMaterial};
+use bevy::prelude::{App, AssetServer, Assets, ClearColor, CoreStage, Handle, Parent, Time, Transform};
+use bevy::render2::mesh::{Indices, VertexAttributeValues, Mesh, shape};
 use rapier::geometry::ShapeType;
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone, SystemLabel)]
@@ -80,7 +83,7 @@ fn generate_collider_mesh(co_shape: &ColliderShape) -> Option<(Mesh, Vec3)> {
         }),
         #[cfg(feature = "dim2")]
         ShapeType::TriMesh => {
-            let mut mesh = Mesh::new(bevy::render::pipeline::PrimitiveTopology::TriangleList);
+            let mut mesh = Mesh::new(bevy::render2::pipeline::PrimitiveTopology::TriangleList);
             let trimesh = co_shape.as_trimesh().unwrap();
             mesh.set_attribute(
                 Mesh::ATTRIBUTE_POSITION,
@@ -104,7 +107,7 @@ fn generate_collider_mesh(co_shape: &ColliderShape) -> Option<(Mesh, Vec3)> {
         }
         #[cfg(feature = "dim3")]
         ShapeType::TriMesh => {
-            let mut mesh = Mesh::new(bevy::render::pipeline::PrimitiveTopology::TriangleList);
+            let mut mesh = Mesh::new(bevy::render2::render_resource::PrimitiveTopology::TriangleList);
             let trimesh = co_shape.as_trimesh().unwrap();
             mesh.set_attribute(
                 Mesh::ATTRIBUTE_POSITION,

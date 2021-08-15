@@ -83,9 +83,11 @@ fn setup_physics(
         .insert_bundle(PbrBundle {
         mesh: meshes.add(Mesh::from(shape::Box::new(10., 0.2, 10.))),
         material: materials.add(StandardMaterial {
-            base_color: Color::hex("ffd891").unwrap(),
+            base_color: Color::hex("EAFFFF").unwrap(),
             // vary key PBR parameters on a grid of spheres to show the effect
-            unlit: true,
+            metallic: 1.0,
+            perceptual_roughness: 0.0,
+            reflectance: 1.0,
             ..Default::default()
         }),
         transform: Transform::from_xyz(-5.0, -2.5, 0.0),
@@ -118,9 +120,11 @@ fn setup_physics(
             subdivisions: 4,
         })),
         material: materials.add(StandardMaterial {
-            base_color: Color::hex("ffd891").unwrap(),
+            base_color: Color::hex("EAFFFF").unwrap(),
             // vary key PBR parameters on a grid of spheres to show the effect
-            unlit: true,
+            metallic: 1.0,
+            perceptual_roughness: 0.0,
+            reflectance: 1.0,
             ..Default::default()
         }),
         transform: Transform::from_xyz(-5.0, -2.5, 0.0),
@@ -160,9 +164,11 @@ fn setup_physics(
         .insert_bundle(PbrBundle {
         mesh: suzanne_handle.clone(),
         material: materials.add(StandardMaterial {
-            base_color: Color::hex("ffd891").unwrap(),
+            base_color: Color::hex("EAFFFF").unwrap(),
             // vary key PBR parameters on a grid of spheres to show the effect
-            unlit: true,
+            metallic: 1.0,
+            perceptual_roughness: 0.0,
+            reflectance: 1.0,
             ..Default::default()
         }),
         transform: Transform::from_xyz(-5.0, -2.5, 0.0),
