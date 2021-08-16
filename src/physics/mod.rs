@@ -1,7 +1,7 @@
 pub use self::collider_component_set::*;
 pub use self::components::*;
-pub use self::plugins::*;
 pub use self::mesh_collider::*;
+pub use self::plugins::*;
 pub use self::resources::*;
 pub use self::rigid_body_component_set::*;
 pub use self::systems::*;

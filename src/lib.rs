@@ -35,7 +35,7 @@ pub mod prelude {
         ErrorSum, SharedShapeMesh, VertexFormatError, VertexIndicesMissing,
         VertexPositionAttributeMissing,
     };
-    
+
     #[cfg(feature = "render")]
     pub use super::render::{ColliderDebugRender, RapierRenderPlugin};
     pub use rapier::prelude::*;

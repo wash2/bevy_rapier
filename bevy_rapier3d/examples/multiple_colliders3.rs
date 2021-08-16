@@ -1,12 +1,12 @@
 extern crate rapier3d as rapier; // For the debug UI.
 
 use bevy::{
-    PipelinedDefaultPlugins, 
-    ecs::prelude::*, 
-    pbr2::{PointLight, PointLightBundle}, 
-    prelude::{App, Transform, FaceToward, BuildChildren}, 
-    render2::camera::PerspectiveCameraBundle,
+    ecs::prelude::*,
     math::{Mat4, Vec3},
+    pbr2::{PointLight, PointLightBundle},
+    prelude::{App, BuildChildren, FaceToward, Transform},
+    render2::camera::PerspectiveCameraBundle,
+    PipelinedDefaultPlugins,
 };
 use bevy_rapier3d::prelude::*;
 

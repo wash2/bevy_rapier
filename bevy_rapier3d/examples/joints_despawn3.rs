@@ -1,7 +1,15 @@
 extern crate nalgebra as na;
 extern crate rapier3d as rapier; // For the debug UI.
 
-use bevy::{PipelinedDefaultPlugins, core::Time, ecs::prelude::*, math::{Mat4, Vec3}, pbr2::{PointLight, PointLightBundle}, prelude::{App, Transform, FaceToward}, render2::camera::PerspectiveCameraBundle};
+use bevy::{
+    core::Time,
+    ecs::prelude::*,
+    math::{Mat4, Vec3},
+    pbr2::{PointLight, PointLightBundle},
+    prelude::{App, FaceToward, Transform},
+    render2::camera::PerspectiveCameraBundle,
+    PipelinedDefaultPlugins,
+};
 use bevy_rapier3d::prelude::*;
 
 use bevy::render::pass::ClearColor;

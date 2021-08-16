@@ -2,9 +2,7 @@
 use crate::{na::Point3, prelude::Real};
 
 #[cfg(all(feature = "dim3", feature = "render"))]
-use bevy::{
-    render2::mesh::{Mesh, Indices, VertexAttributeValues},
-};
+use bevy::render2::mesh::{Indices, Mesh, VertexAttributeValues};
 #[cfg(all(feature = "dim3", feature = "render"))]
 use rapier::math::DIM;
 #[cfg(all(feature = "dim3", feature = "render"))]

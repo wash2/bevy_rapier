@@ -1,15 +1,23 @@
 extern crate rapier3d as rapier; // For the debug UI.
 
-use bevy::{PipelinedDefaultPlugins, asset::{HandleUntyped, Handle}, ecs::prelude::*, gltf2::{Gltf, GltfMesh}, math::Vec3, pbr2::{PbrBundle, PointLight, PointLightBundle, StandardMaterial}, prelude::{App, AssetServer, Assets, ClearColor, CoreStage, Time, Transform}, render2::{
-        camera::{PerspectiveCameraBundle},
+use bevy::{
+    asset::{Handle, HandleUntyped},
+    ecs::prelude::*,
+    gltf2::{Gltf, GltfMesh},
+    math::Vec3,
+    pbr2::{PbrBundle, PointLight, PointLightBundle, StandardMaterial},
+    prelude::{App, AssetServer, Assets, ClearColor, CoreStage, Time, Transform},
+    render2::{
+        camera::PerspectiveCameraBundle,
         color::Color,
         mesh::{shape, Mesh},
-    }};
+    },
+    PipelinedDefaultPlugins,
+};
 use bevy_rapier3d::{na::Point3, prelude::*};
 use rapier3d::pipeline::PhysicsPipeline;
 use std::convert::TryInto;
 static DEBUG: &str = "debug";
-
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 enum AppState {
@@ -81,18 +89,18 @@ fn setup_physics(
         .spawn_bundle(collider)
         // .insert(ColliderDebugRender::with_id(color))
         .insert_bundle(PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Box::new(10., 0.2, 10.))),
-        material: materials.add(StandardMaterial {
-            base_color: Color::hex("EAFFFF").unwrap(),
-            // vary key PBR parameters on a grid of spheres to show the effect
-            metallic: 1.0,
-            perceptual_roughness: 0.0,
-            reflectance: 1.0,
+            mesh: meshes.add(Mesh::from(shape::Box::new(10., 0.2, 10.))),
+            material: materials.add(StandardMaterial {
+                base_color: Color::hex("EAFFFF").unwrap(),
+                // vary key PBR parameters on a grid of spheres to show the effect
+                metallic: 1.0,
+                perceptual_roughness: 0.0,
+                reflectance: 1.0,
+                ..Default::default()
+            }),
+            transform: Transform::from_xyz(-5.0, -2.5, 0.0),
             ..Default::default()
-        }),
-        transform: Transform::from_xyz(-5.0, -2.5, 0.0),
-        ..Default::default()
-    })
+        })
         .insert(ColliderPositionSync::Discrete);
 
     /* Create the bouncing ball. */
@@ -115,21 +123,21 @@ fn setup_physics(
         // .insert(mesh)
         // .insert(ColliderDebugRender::with_id(color))
         .insert_bundle(PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Icosphere {
-            radius: 0.5,
-            subdivisions: 4,
-        })),
-        material: materials.add(StandardMaterial {
-            base_color: Color::hex("EAFFFF").unwrap(),
-            // vary key PBR parameters on a grid of spheres to show the effect
-            metallic: 1.0,
-            perceptual_roughness: 0.0,
-            reflectance: 1.0,
+            mesh: meshes.add(Mesh::from(shape::Icosphere {
+                radius: 0.5,
+                subdivisions: 4,
+            })),
+            material: materials.add(StandardMaterial {
+                base_color: Color::hex("EAFFFF").unwrap(),
+                // vary key PBR parameters on a grid of spheres to show the effect
+                metallic: 1.0,
+                perceptual_roughness: 0.0,
+                reflectance: 1.0,
+                ..Default::default()
+            }),
+            transform: Transform::from_xyz(-5.0, -2.5, 0.0),
             ..Default::default()
-        }),
-        transform: Transform::from_xyz(-5.0, -2.5, 0.0),
-        ..Default::default()
-    })
+        })
         .insert(ColliderPositionSync::Discrete);
 
     // Then any asset in the folder can be accessed like this:
@@ -162,18 +170,18 @@ fn setup_physics(
         .spawn_bundle(coll)
         .insert_bundle(rb)
         .insert_bundle(PbrBundle {
-        mesh: suzanne_handle.clone(),
-        material: materials.add(StandardMaterial {
-            base_color: Color::hex("EAFFFF").unwrap(),
-            // vary key PBR parameters on a grid of spheres to show the effect
-            metallic: 1.0,
-            perceptual_roughness: 0.0,
-            reflectance: 1.0,
+            mesh: suzanne_handle.clone(),
+            material: materials.add(StandardMaterial {
+                base_color: Color::hex("EAFFFF").unwrap(),
+                // vary key PBR parameters on a grid of spheres to show the effect
+                metallic: 1.0,
+                perceptual_roughness: 0.0,
+                reflectance: 1.0,
+                ..Default::default()
+            }),
+            transform: Transform::from_xyz(-5.0, -2.5, 0.0),
             ..Default::default()
-        }),
-        transform: Transform::from_xyz(-5.0, -2.5, 0.0),
-        ..Default::default()
-    })
+        })
         .insert(ColliderPositionSync::Discrete);
 }
 
@@ -189,12 +197,9 @@ fn main() {
         .add_startup_system(enable_physics_profiling)
         .add_state(AppState::GltfAssetsLoading)
         .init_resource::<AssetsLoading>()
+        .add_system_set(SystemSet::on_enter(AppState::GltfAssetsLoading).with_system(setup_assets))
         .add_system_set(
-            SystemSet::on_enter(AppState::GltfAssetsLoading).with_system(setup_assets),
-        )
-        .add_system_set(
-            SystemSet::on_update(AppState::GltfAssetsLoading)
-                .with_system(check_assets_ready),
+            SystemSet::on_update(AppState::GltfAssetsLoading).with_system(check_assets_ready),
         )
         .add_system_set(SystemSet::on_enter(AppState::InGame).with_system(setup_physics))
         .run();
