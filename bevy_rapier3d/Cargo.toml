@@ -1,13 +1,13 @@
 [package]
 name = "bevy_rapier3d"
-version = "0.10.2"
+version = "0.11.0"
 authors = ["Sébastien Crozet <developer@crozet.re>"]
 description = "3-dimensional physics engine in Rust, official Bevy plugin."
 documentation = "http://docs.rs/bevy_rapier3d"
 homepage = "http://rapier.rs"
 repository = "https://github.com/dimforge/bevy_rapier"
 readme = "README.md"
-keywords = [ "physics", "dynamics", "rigid", "real-time", "joints" ]
+keywords = ["physics", "dynamics", "rigid", "real-time", "joints"]
 license = "Apache-2.0"
 edition = "2018"
 
@@ -15,27 +15,38 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
 path = "../src/lib.rs"
-required-features = [ "dim3" ]
+required-features = ["dim3"]
 
 [features]
-default = [ "dim3", "render" ]
+default = ["dim3", "render"]
 dim3 = []
-render = [ "bevy/bevy_render2", "bevy/bevy_core_pipeline" ]
-parallel = [ "rapier3d/parallel" ]
-simd-stable = [ "rapier3d/simd-stable" ]
-simd-nightly = [ "rapier3d/simd-nightly" ]
-wasm-bindgen = [ "rapier3d/wasm-bindgen" ]
-serde-serialize = [ "rapier3d/serde-serialize" ]
-enhanced-determinism = [ "rapier3d/enhanced-determinism" ]
+render = ["bevy/bevy_render2", "bevy/bevy_core_pipeline"]
+parallel = ["rapier3d/parallel"]
+simd-stable = ["rapier3d/simd-stable"]
+simd-nightly = ["rapier3d/simd-nightly"]
+wasm-bindgen = ["rapier3d/wasm-bindgen"]
+serde-serialize = ["rapier3d/serde-serialize"]
+enhanced-determinism = ["rapier3d/enhanced-determinism"]
 
 [dependencies]
 bevy = { git = "https://github.com/bevyengine/bevy", branch = "pipelined-rendering", default-features = false }
-nalgebra = { version = "0.27", features = [ "convert-glam015" ] }
+nalgebra = { version = "0.29", features = ["convert-glam013"] }
 # Don't enable the default features because we don't need the ColliderSet/RigidBodySet
-rapier3d = { version = "^0.9.2", default-features = false, features = [ "dim3", "f32" ] }
+rapier3d = { version = "^0.11", default-features = false, features = [
+    "dim3",
+    "f32",
+] }
 
 [dev-dependencies]
-bevy = { git = "https://github.com/bevyengine/bevy", branch = "pipelined-rendering", features=["render", "bevy_gltf2", "bevy_render2", "bevy_pbr2", "bevy_core_pipeline"] }
+bevy = { git = "https://github.com/bevyengine/bevy", branch = "pipelined-rendering", features = [
+    "render",
+    "bevy_gltf2",
+    "bevy_render2",
+    "bevy_pbr2",
+    "bevy_core_pipeline",
+] }
 
 bevy_wgpu = { git = "https://github.com/bevyengine/bevy", branch = "pipelined-rendering" }
-bevy_winit = { git = "https://github.com/bevyengine/bevy", branch = "pipelined-rendering", features = [ "x11" ] }
+bevy_winit = { git = "https://github.com/bevyengine/bevy", branch = "pipelined-rendering", features = [
+    "x11",
+] }
